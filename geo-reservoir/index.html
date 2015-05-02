@@ -16,18 +16,22 @@
       renderer.setSize( window.innerWidth, window.innerHeight );
       document.body.appendChild( renderer.domElement );
 
-      var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-      var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-      var cube = new THREE.Mesh( geometry, material );
-      scene.add( cube );
+      var geometry = new THREE.Geometry();
+      for ( var i = 0; i < 100; i ++ ){
+          var v = new THREE.Vector3( Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+          geometry.vertices.push( v );
+      }
+      var material = new THREE.PointCloudMaterial( { size: .1 } );
+      var pointCloud = new THREE.PointCloud( geometry, material );
+      scene.add( pointCloud );
 
       camera.position.z = 5;
 
       var render = function () {
         requestAnimationFrame( render );
 
-        cube.rotation.x += 0.1;
-        cube.rotation.y += 0.1;
+        //cube.rotation.x += 0.1;
+        //cube.rotation.y += 0.1;
 
         renderer.render(scene, camera);
       };
