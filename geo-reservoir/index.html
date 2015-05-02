@@ -9,22 +9,31 @@
   <body>
     <script src="js/three.min.js"></script>
     <script src="js/OrbitControls.js"></script>
+    <script src="js/VRControls.js"></script>
+    <script src="js/VREffect.js"></script>
     <script>
+      var display_mode;
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-      var controls = new THREE.OrbitControls( camera );
-      controls.damping = 0.2;
+      var orbit_controls = new THREE.OrbitControls( camera );
+      orbit_controls.damping = 0.2;
+      var vr_controls = new THREE.VRControls( camera );
 
-      var renderer = new THREE.WebGLRenderer();
+      var renderer = new THREE.WebGLRenderer( {antialias: true} );
       renderer.setSize( window.innerWidth, window.innerHeight );
       document.body.appendChild( renderer.domElement );
+      var vr_effect = new THREE.VREffect( renderer );
+		  vr_effect.setSize( window.innerWidth, window.innerHeight );
 
       var geometry = new THREE.Geometry();
-      for ( var i = 0; i < 100; i ++ ){
-          var v = new THREE.Vector3( Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+      for ( var i = 0; i < 1000; i ++ ){
+          var x = Math.random() * 100 - 50;
+          var y = Math.random() * 100 - 50;
+          var z = Math.random() * 100 - 50;
+          var v = new THREE.Vector3( x, y, z );
           geometry.vertices.push( v );
       }
-      var material = new THREE.PointCloudMaterial( { size: .1 } );
+      var material = new THREE.PointCloudMaterial( { size: .5 } );
       var pointCloud = new THREE.PointCloud( geometry, material );
       scene.add( pointCloud );
 
@@ -36,11 +45,37 @@
         //pointCloud.rotation.x += 0.01;
         //pointCloud.rotation.y += 0.01;
 
-        controls.update();
-        renderer.render(scene, camera);
+        if ( display_mode == 'vr' ) {
+            vr_controls.update();
+            vr_effect.render(scene, camera);
+        } else {
+            orbit_controls.update();
+            renderer.render(scene, camera);
+        }
       };
 
       render();
+
+      /*
+      Listen for keyboard events to enter full-screen VR mode.
+      */
+      function onkey(event) {
+
+        if (!(event.metaKey || event.altKey || event.ctrlKey)) {
+          event.preventDefault();
+        }
+
+        if (event.charCode == 'v'.charCodeAt(0)) { // v
+          display_mode = 'vr';
+          vr_controls.zeroSensor();
+          vr_effect.setFullScreen( true );
+        } else if (event.charCode == 'd'.charCodeAt(0)) { // d
+          display_mode = '';
+          renderer.setSize( window.innerWidth, window.innerHeight );
+        }
+      };
+
+	  window.addEventListener("keypress", onkey, true);
     </script>
   </body>
 </html>
