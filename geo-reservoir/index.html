@@ -19,10 +19,16 @@
       var display_mode;
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, .1, 15000 );
-      camera.position.set(-95, 39.94, 5);
-
+/*
+      var cameraAngle = 0;
+      var orbitRange = 1;
+      var orbitSpeed = 2 * Math.PI/360;
+      var desiredAngle = 90 * Math.PI/180;
+*/
+      camera.position.set(-95, 1, 39.95);
       var orbit_controls = new THREE.OrbitControls( camera );
-      orbit_controls.damping = .02;
+      orbit_controls.damping = .002;
+      orbit_controls.center.set(-120, 1, 39.95);
 
       var vr_controls = new THREE.VRControls( camera );
 
@@ -35,9 +41,10 @@
 
       var axisHelper = new THREE.AxisHelper( 100 );
       scene.add( axisHelper );
-
+/*
       var cameraHelper = new THREE.CameraHelper( camera );
       scene.add( cameraHelper );
+*/
 
       var kb_geo = new THREE.Geometry();
       var kb_z_values = [];
@@ -90,20 +97,29 @@
       var kbPointCloud = new THREE.PointCloud( kb_geo, material );
       scene.add( kbPointCloud );
 
-      ctv = kbPointCloud.geometry.vertices[0];
+      ctv = kbPointCloud.geometry.vertices[25];
       ctv3 = new THREE.Vector3(ctv.x, ctv.y, ctv.z)
       camera.lookAt(ctv3);
+//    orbit_controls.center.set(ctv.x, ctv.y, ctv.z);
 
       var render = function () {
-        requestAnimationFrame( render );
-
         if ( display_mode == 'vr' ) {
             vr_controls.update();
             vr_effect.render(scene, camera);
         } else {
+/*
+            camera.lookAt(ctv3);
+            if (cameraAngle == desiredAngle) { orbitSpeed = 0; }
+            else {
+              cameraAngle += orbitSpeed;
+              camera.position.x = Math.cos(cameraAngle) * orbitRange;
+              camera.position.y = Math.sin(cameraAngle) * orbitRange;
+            }
+*/
             orbit_controls.update();
             renderer.render(scene, camera);
         }
+        requestAnimationFrame( render );
       };
 
       render();
