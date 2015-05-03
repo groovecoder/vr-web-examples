@@ -20,7 +20,6 @@
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, .1, 15000 );
       camera.position.set(-95, 39.94, 5);
-      camera.rotateX( Math.PI / 2 );
 
       var orbit_controls = new THREE.OrbitControls( camera );
       orbit_controls.damping = .02;
@@ -56,7 +55,7 @@
               kb_z = well.kb.value / 1000;
               kb_z_values.push(kb_z);
           }
-          var v = new THREE.Vector3( x, y, kb_z );
+          var v = new THREE.Vector3( x, kb_z, y );
           kb_geo.vertices.push( v );
 
           // cylinders where the wells detect a reservoir
@@ -65,20 +64,20 @@
             var cyl_geo = new THREE.CylinderGeometry( .01, .01, cyl_height );
             var cyl_mat = new THREE.MeshBasicMaterial( { color: 0x888800 } );
             var cyl = new THREE.Mesh( cyl_geo, cyl_mat );
-            cyl.position.set(x, y, 0 - (well.top / 1000) );
-            cyl.rotateX( Math.PI / 2 );
+            cyl.position.set(x, 0 - (well.top / 1000), y );
             cylinders.push( cyl );
             scene.add( cyl );
           }
       }
 
+
+
+      // go back and set 0 kb_z values to average of others'
       kb_z_sum = 0;
       for (var i = 0; i < kb_z_values.length; i++) {
           kb_z_sum += kb_z_values[i];
       }
       var kb_z_avg = kb_z_sum / kb_z_values.length;
-
-      // go back and set 0 kb_z values to average of others'
       for (var i = 0; i < kb_geo.vertices.length; i++ ) {
         if (kb_geo.vertices[i].z == 0) {
           kb_geo.vertices[i].z = kb_z_avg;
@@ -91,7 +90,7 @@
       var kbPointCloud = new THREE.PointCloud( kb_geo, material );
       scene.add( kbPointCloud );
 
-      ctv = kbPointCloud.geometry.vertices[25];
+      ctv = kbPointCloud.geometry.vertices[0];
       ctv3 = new THREE.Vector3(ctv.x, ctv.y, ctv.z)
       camera.lookAt(ctv3);
 
