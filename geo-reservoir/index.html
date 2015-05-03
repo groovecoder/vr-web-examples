@@ -11,6 +11,9 @@
     <script src="js/OrbitControls.js"></script>
     <script src="js/VRControls.js"></script>
     <script src="js/VREffect.js"></script>
+    <script src="https://js.leapmotion.com/leap-0.6.4.js"></script>
+    <script src="https://js.leapmotion.com/leap-plugins-0.1.8.min.js"></script>
+    <script src="https://js.leapmotion.com/leap.rigged-hand-0.1.5.min.js"></script>
     <script>
       var display_mode;
       var scene = new THREE.Scene();
@@ -41,9 +44,6 @@
 
       var render = function () {
         requestAnimationFrame( render );
-
-        //pointCloud.rotation.x += 0.01;
-        //pointCloud.rotation.y += 0.01;
 
         if ( display_mode == 'vr' ) {
             vr_controls.update();
@@ -76,6 +76,23 @@
       };
 
 	  window.addEventListener("keypress", onkey, true);
+
+    (window.controller = new Leap.Controller).use('riggedHand', {
+        parent: scene,
+        renderFn: function() {
+          if ( display_mode == 'vr' ) {
+            vr_effect.render( scene, camera);
+          } else {
+            renderer.render( scene, camera );
+          }
+        },
+        materialOptions: {
+            wireframe: true
+        },
+        offset: new THREE.Vector3(0,-200,-250),
+        positionScale: 2
+    }).connect()
+
     </script>
   </body>
 </html>
