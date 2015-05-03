@@ -58,7 +58,7 @@
 
           // x,y,z vectors where the kelly bushes are
           var kb_z = 0;
-          if (well.kb) {
+          if (well.kb && well.kb.value > 0) {
               kb_z = well.kb.value / 1000;
               kb_z_values.push(kb_z);
           }
@@ -66,12 +66,12 @@
           kb_geo.vertices.push( v );
 
           // cylinders where the wells detect a reservoir
-          var cyl_height = (well.bottom - well.top) / 1000;
+          var cyl_height = (well.reservoir.bottom - well.reservoir.top) / 1000;
           if ( cyl_height > 0) {
             var cyl_geo = new THREE.CylinderGeometry( .01, .01, cyl_height );
             var cyl_mat = new THREE.MeshBasicMaterial( { color: 0x888800 } );
             var cyl = new THREE.Mesh( cyl_geo, cyl_mat );
-            cyl.position.set(x, 0 - (well.top / 1000), y );
+            cyl.position.set(x, 0 - (well.reservoir.top / 1000), y );
             cylinders.push( cyl );
             scene.add( cyl );
           }
