@@ -100,7 +100,22 @@
       ctv = kbPointCloud.geometry.vertices[25];
       ctv3 = new THREE.Vector3(ctv.x, ctv.y, ctv.z)
       camera.lookAt(ctv3);
-//    orbit_controls.center.set(ctv.x, ctv.y, ctv.z);
+
+      var geometry = new THREE.PlaneGeometry( 2000, 2000, 32 );
+      var material = new THREE.MeshBasicMaterial( {color: 0x333366, side: THREE.DoubleSide, transparent: true, opacity: 0.5} );
+      var sea = new THREE.Mesh( geometry, material );
+      sea.rotateX( Math.PI/2 );
+      scene.add( sea );
+
+      var geometry = new THREE.SphereGeometry( 5000, 64, 64 );
+      geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+      var material = new THREE.MeshBasicMaterial( {
+        transparent: true,
+        opacity: 0.2,
+        map: THREE.ImageUtils.loadTexture( 'images/background.png' )
+      });
+      var sky = new THREE.Mesh( geometry, material );
+      scene.add( sky );
 
       var render = function () {
         if ( display_mode == 'vr' ) {
@@ -116,6 +131,11 @@
               camera.position.y = Math.sin(cameraAngle) * orbitRange;
             }
 */
+            if (camera.position.y < 0) {
+              sky.material.opacity = 0;
+            } else {
+              sky.material.opacity = 0.2;
+            }
             orbit_controls.update();
             renderer.render(scene, camera);
         }
